@@ -11,8 +11,12 @@ func GetImage(input string) *Image {
 			Image: "https://media.giphy.com/media/26uf7I0OKqyIpUO5O/giphy-downsized.gif",
 			URL:   "https://giphy.com/gifs/viceprincipals-hbo-vice-principals-26uf7I0OKqyIpUO5O",
 		},
+		"disappointed": {
+			Image: "https://media.giphy.com/media/3oAt21Fnr4i54uK8vK/giphy-downsized.gif",
+			URL:   "https://giphy.com/gifs/hercules-disappointed-let-down-3oAt21Fnr4i54uK8vK/media",
+		},
 		"do it": {
-			Image: "https://media.giphy.com/media/wi8Ez1mwRcKGI/giphy.gif",
+			Image: "https://media.giphy.com/media/wi8Ez1mwRcKGI/giphy-downsized.gif",
 			URL:   "https://giphy.com/gifs/elvira-georgia-dex-wi8Ez1mwRcKGI",
 		},
 		"impressive": {
