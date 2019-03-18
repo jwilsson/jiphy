@@ -7,6 +7,10 @@ type Image struct {
 
 func GetImage(input string) *Image {
 	images := map[string]*Image{
+        "awkward": {
+			Image: "https://media.giphy.com/media/kaq6GnxDlJaBq/giphy-downsized.gif",
+			URL:   "https://giphy.com/gifs/chloe-concerned-kaq6GnxDlJaBq",
+		},
 		"calm down": {
 			Image: "https://media.giphy.com/media/26uf7I0OKqyIpUO5O/giphy-downsized.gif",
 			URL:   "https://giphy.com/gifs/viceprincipals-hbo-vice-principals-26uf7I0OKqyIpUO5O",
