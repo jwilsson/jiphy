@@ -41,18 +41,22 @@ func handleRequest(request events.APIGatewayProxyRequest) (events.APIGatewayProx
 	image := GetImage(text)
 
 	var attachments []*Attachment
+	var responseType string
+
 	if image != nil {
+		responseType = "in_channel"
 		attachments = []*Attachment{
 			&Attachment{
-				AuthorName: fmt.Sprintf("Sent by %s", userName),
+				AuthorName: fmt.Sprintf("\"%s\" sent by %s", text, userName),
 				Fallback:   text,
 				ImageURL:   image.Image,
 			},
 		}
 	} else {
+		responseType = "ephemeral"
 		attachments = []*Attachment{
 			&Attachment{
-				AuthorName: fmt.Sprintf("Sent by %s", userName),
+				AuthorName: fmt.Sprintf("Nothing found for *%s* :confused:", text),
 				Fallback:   fmt.Sprintf("Nothing found for *%s* :confused:", text),
 				ImageURL:   "https://media.giphy.com/media/5L3qVEnmZi8Yo/giphy-downsized.gif",
 			},
@@ -61,7 +65,7 @@ func handleRequest(request events.APIGatewayProxyRequest) (events.APIGatewayProx
 
 	slackURL, _ := url.QueryUnescape(body.Get("response_url"))
 	jsonBody, _ := json.Marshal(Response{
-		ResponseType: "in_channel",
+		ResponseType: responseType,
 		Attachments:  attachments,
 	})
 
