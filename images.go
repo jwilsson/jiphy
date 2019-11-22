@@ -5,9 +5,9 @@ type Image struct {
 	URL   string
 }
 
-func GetImage(input string) *Image {
+func getImage(input string) *Image {
 	images := map[string]*Image{
-        	"awkward": {
+		"awkward": {
 			Image: "https://media.giphy.com/media/kaq6GnxDlJaBq/giphy-downsized.gif",
 			URL:   "https://giphy.com/gifs/chloe-concerned-kaq6GnxDlJaBq",
 		},
