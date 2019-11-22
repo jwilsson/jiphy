@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"log"
 	"net/url"
+	"strings"
 
 	"github.com/aws/aws-lambda-go/events"
 	"github.com/aws/aws-lambda-go/lambda"
@@ -26,11 +27,25 @@ func handleRequest(request events.APIGatewayProxyRequest) (events.APIGatewayProx
 		return defaultResp, nil
 	}
 
+	if text == "list" {
+		title := []string{"*All GIFs in Jiphy*"}
+		imageKeys := getImageKeys()
+
+		imageKeys = append(title, imageKeys...)
+
+		sectionText := strings.Join(imageKeys, "\n")
+		blocks := buildSection(sectionText)
+
+		sendMessage(slackURL, "ephemeral", blocks)
+
+		return defaultResp, nil
+	}
+
 	image := getImage(text)
 
 	if image == nil {
 		title := fmt.Sprintf("Couldn't find \"%s\"", text)
-		blocks := buildMessage(title, "https://media.giphy.com/media/l0Iy2hYDgmCjMufzq/giphy-downsized.gif")
+		blocks := buildImage(title, "https://media.giphy.com/media/l0Iy2hYDgmCjMufzq/giphy-downsized.gif")
 
 		sendMessage(slackURL, "ephemeral", blocks)
 
@@ -38,7 +53,7 @@ func handleRequest(request events.APIGatewayProxyRequest) (events.APIGatewayProx
 	}
 
 	title := fmt.Sprintf("%s sent \"%s\"", body.Get("user_name"), text)
-	blocks := buildMessage(title, image.Image)
+	blocks := buildImage(title, image.Image)
 
 	sendMessage(slackURL, "in_channel", blocks)
 

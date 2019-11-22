@@ -5,7 +5,7 @@ type Image struct {
 	URL   string
 }
 
-func getImage(input string) *Image {
+func getImages() map[string]*Image {
 	images := map[string]*Image{
 		"awkward": {
 			Image: "https://media.giphy.com/media/kaq6GnxDlJaBq/giphy-downsized.gif",
@@ -45,6 +45,22 @@ func getImage(input string) *Image {
 		},
 	}
 
+	return images
+}
+
+func getImageKeys() []string {
+	images := getImages()
+	imageKeys := make([]string, 0, len(images))
+
+	for k := range images {
+		imageKeys = append(imageKeys, "• "+k)
+	}
+
+	return imageKeys
+}
+
+func getImage(input string) *Image {
+	images := getImages()
 	image, ok := images[input]
 
 	if ok {

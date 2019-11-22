@@ -7,44 +7,85 @@ import (
 	"net/http"
 )
 
-type BlockTitle struct {
-	Emoji bool   `json:"emoji"`
-	Text  string `json:"text"`
-	Type  string `json:"type"`
+type Block struct {
+	Type string `json:"type"`
 }
 
-type Block struct {
+type BlockText struct {
+	Text string `json:"text"`
+	Type string `json:"type"`
+}
+
+type BlockTitle struct {
+	BlockText
+
+	Emoji bool `json:"emoji"`
+}
+
+type ImageBlock struct {
+	Block
+
 	AltText  string     `json:"alt_text"`
 	ImageUrl string     `json:"image_url"`
 	Title    BlockTitle `json:"title"`
-	Type     string     `json:"type"`
+}
+
+type SectionBlock struct {
+	Block
+
+	Text BlockText `json:"text"`
 }
 
 type Response struct {
-	Blocks       []*Block `json:"blocks"`
-	ResponseType string   `json:"response_type"`
+	Blocks       interface{} `json:"blocks"`
+	ResponseType string      `json:"response_type"`
 }
 
-func buildMessage(title string, imageUrl string) []*Block {
+func buildImage(title string, imageUrl string) []*ImageBlock {
 	blockTitle := BlockTitle{
-		Emoji: true,
-		Text:  title,
-		Type:  "plain_text",
+		BlockText: BlockText{
+			Text: title,
+			Type: "plain_text",
+		},
+
+		Emoji: false,
 	}
 
-	blocks := []*Block{
-		&Block{
+	blocks := []*ImageBlock{
+		&ImageBlock{
+			Block: Block{
+				Type: "image",
+			},
+
 			AltText:  title,
 			ImageUrl: imageUrl,
 			Title:    blockTitle,
-			Type:     "image",
 		},
 	}
 
 	return blocks
 }
 
-func sendMessage(url string, responseType string, blocks []*Block) error {
+func buildSection(text string) []*SectionBlock {
+	blockText := BlockText{
+		Text: text,
+		Type: "mrkdwn",
+	}
+
+	blocks := []*SectionBlock{
+		&SectionBlock{
+			Block: Block{
+				Type: "section",
+			},
+
+			Text: blockText,
+		},
+	}
+
+	return blocks
+}
+
+func sendMessage(url string, responseType string, blocks interface{}) error {
 	body, _ := json.Marshal(Response{
 		Blocks:       blocks,
 		ResponseType: responseType,
