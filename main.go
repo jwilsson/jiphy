@@ -10,21 +10,31 @@ import (
 	"github.com/aws/aws-lambda-go/lambda"
 )
 
-func handleRequest(request events.APIGatewayProxyRequest) (events.APIGatewayProxyResponse, error) {
-	defaultResp := events.APIGatewayProxyResponse{
+func createResponse(statusCode int) events.APIGatewayProxyResponse {
+	return events.APIGatewayProxyResponse{
 		Body:       "",
 		Headers:    map[string]string{},
-		StatusCode: 200,
+		StatusCode: statusCode,
 	}
+}
 
+func handleRequest(request events.APIGatewayProxyRequest) (events.APIGatewayProxyResponse, error) {
 	log.Printf("Received body: %v", request.Body)
 
-	body, _ := url.ParseQuery(request.Body)
-	slackURL, _ := url.QueryUnescape(body.Get("response_url"))
+	body, err := url.ParseQuery(request.Body)
+	if err != nil {
+		return createResponse(500), err
+	}
+
+	slackURL, err := url.QueryUnescape(body.Get("response_url"))
+	if err != nil {
+		return createResponse(500), err
+	}
+
 	text := body.Get("text")
 
 	if text == "" {
-		return defaultResp, nil
+		return createResponse(200), nil
 	}
 
 	if text == "list" {
@@ -37,7 +47,7 @@ func handleRequest(request events.APIGatewayProxyRequest) (events.APIGatewayProx
 
 		sendMessage(slackURL, msg)
 
-		return defaultResp, nil
+		return createResponse(200), nil
 	}
 
 	image := getImage(text)
@@ -50,7 +60,7 @@ func handleRequest(request events.APIGatewayProxyRequest) (events.APIGatewayProx
 
 		sendMessage(slackURL, msg)
 
-		return defaultResp, nil
+		return createResponse(200), nil
 	}
 
 	title := fmt.Sprintf("%s sent \"%s\"", body.Get("user_name"), text)
@@ -58,7 +68,7 @@ func handleRequest(request events.APIGatewayProxyRequest) (events.APIGatewayProx
 
 	sendMessage(slackURL, msg)
 
-	return defaultResp, nil
+	return createResponse(200), nil
 }
 
 func main() {
