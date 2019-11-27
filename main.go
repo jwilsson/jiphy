@@ -29,14 +29,13 @@ func handleRequest(request events.APIGatewayProxyRequest) (events.APIGatewayProx
 
 	if text == "list" {
 		title := []string{"*All GIFs in Jiphy*"}
-		imageKeys := getImageKeys()
+		imageKeys := append(title, getImageKeys()...)
 
-		imageKeys = append(title, imageKeys...)
+		msg := buildSection(
+			strings.Join(imageKeys, "\n"),
+		)
 
-		sectionText := strings.Join(imageKeys, "\n")
-		blocks := buildSection(sectionText)
-
-		sendMessage(slackURL, "ephemeral", blocks)
+		sendMessage(slackURL, msg)
 
 		return defaultResp, nil
 	}
@@ -44,18 +43,20 @@ func handleRequest(request events.APIGatewayProxyRequest) (events.APIGatewayProx
 	image := getImage(text)
 
 	if image == nil {
+		imageURL := "https://media.giphy.com/media/l0Iy2hYDgmCjMufzq/giphy-downsized.gif"
 		title := fmt.Sprintf("Couldn't find \"%s\"", text)
-		blocks := buildImage(title, "https://media.giphy.com/media/l0Iy2hYDgmCjMufzq/giphy-downsized.gif")
 
-		sendMessage(slackURL, "ephemeral", blocks)
+		msg := buildImage(title, imageURL, "ephemeral")
+
+		sendMessage(slackURL, msg)
 
 		return defaultResp, nil
 	}
 
 	title := fmt.Sprintf("%s sent \"%s\"", body.Get("user_name"), text)
-	blocks := buildImage(title, image.Image)
+	msg := buildImage(title, image.Image, "in_channel")
 
-	sendMessage(slackURL, "in_channel", blocks)
+	sendMessage(slackURL, msg)
 
 	return defaultResp, nil
 }

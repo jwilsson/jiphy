@@ -5,91 +5,32 @@ import (
 	"encoding/json"
 	"log"
 	"net/http"
+
+	"github.com/nlopes/slack"
 )
 
-type Block struct {
-	Type string `json:"type"`
+func buildImage(title string, imageUrl string, responseType string) slack.Message {
+	blockTitle := slack.NewTextBlockObject("plain_text", title, false, false)
+	block := slack.NewImageBlock(imageUrl, title, "", blockTitle)
+	msg := slack.NewBlockMessage(block)
+
+	msg.Msg.ResponseType = responseType
+
+	return msg
 }
 
-type BlockText struct {
-	Text string `json:"text"`
-	Type string `json:"type"`
+func buildSection(content string) slack.Message {
+	blockText := slack.NewTextBlockObject("mrkdwn", content, false, false)
+	block := slack.NewSectionBlock(blockText, nil, nil)
+	msg := slack.NewBlockMessage(block)
+
+	msg.Msg.ResponseType = "ephemeral"
+
+	return msg
 }
 
-type BlockTitle struct {
-	BlockText
-
-	Emoji bool `json:"emoji"`
-}
-
-type ImageBlock struct {
-	Block
-
-	AltText  string     `json:"alt_text"`
-	ImageUrl string     `json:"image_url"`
-	Title    BlockTitle `json:"title"`
-}
-
-type SectionBlock struct {
-	Block
-
-	Text BlockText `json:"text"`
-}
-
-type Response struct {
-	Blocks       interface{} `json:"blocks"`
-	ResponseType string      `json:"response_type"`
-}
-
-func buildImage(title string, imageUrl string) []*ImageBlock {
-	blockTitle := BlockTitle{
-		BlockText: BlockText{
-			Text: title,
-			Type: "plain_text",
-		},
-
-		Emoji: false,
-	}
-
-	blocks := []*ImageBlock{
-		&ImageBlock{
-			Block: Block{
-				Type: "image",
-			},
-
-			AltText:  title,
-			ImageUrl: imageUrl,
-			Title:    blockTitle,
-		},
-	}
-
-	return blocks
-}
-
-func buildSection(text string) []*SectionBlock {
-	blockText := BlockText{
-		Text: text,
-		Type: "mrkdwn",
-	}
-
-	blocks := []*SectionBlock{
-		&SectionBlock{
-			Block: Block{
-				Type: "section",
-			},
-
-			Text: blockText,
-		},
-	}
-
-	return blocks
-}
-
-func sendMessage(url string, responseType string, blocks interface{}) error {
-	body, _ := json.Marshal(Response{
-		Blocks:       blocks,
-		ResponseType: responseType,
-	})
+func sendMessage(url string, message slack.Message) error {
+	body, _ := json.Marshal(message)
 
 	log.Printf("Posting %s to %s", body, url)
 
