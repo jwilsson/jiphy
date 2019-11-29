@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"log"
 	"net/url"
+	"os"
 	"strings"
 
 	"github.com/aws/aws-lambda-go/events"
@@ -38,11 +39,15 @@ func handleRequest(request events.APIGatewayProxyRequest) (events.APIGatewayProx
 	}
 
 	if text == "list" {
-		title := []string{"*All GIFs in Jiphy*"}
-		imageKeys := append(title, getImageKeys()...)
+		imageNames, err := getImageNames(os.Getenv("DYNAMO_TABLE_NAME"))
+		if err != nil {
+			return createResponse(500), err
+		}
 
+		title := []string{"*All GIFs in Jiphy*"}
+		imageNames = append(title, imageNames...)
 		msg := buildSection(
-			strings.Join(imageKeys, "\n"),
+			strings.Join(imageNames, "\n"),
 		)
 
 		sendMessage(slackURL, msg)
@@ -50,7 +55,10 @@ func handleRequest(request events.APIGatewayProxyRequest) (events.APIGatewayProx
 		return createResponse(200), nil
 	}
 
-	image := getImage(text)
+	image, err := getImage(text, os.Getenv("DYNAMO_TABLE_NAME"))
+	if err != nil {
+		return createResponse(500), err
+	}
 
 	if image == nil {
 		imageURL := "https://media.giphy.com/media/l0Iy2hYDgmCjMufzq/giphy-downsized.gif"
@@ -64,7 +72,7 @@ func handleRequest(request events.APIGatewayProxyRequest) (events.APIGatewayProx
 	}
 
 	title := fmt.Sprintf("%s sent \"%s\"", body.Get("user_name"), text)
-	msg := buildImage(title, image.Image, "in_channel")
+	msg := buildImage(title, image.ImageURL, "in_channel")
 
 	sendMessage(slackURL, msg)
 
