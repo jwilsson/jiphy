@@ -4,6 +4,21 @@ provider:
   name: aws
   runtime: go1.x
   region: eu-west-1
+  iamRoleStatements:
+    - Effect: 'Allow'
+      Action:
+        - 'dynamodb:Query'
+      Resource:
+        Fn::GetAtt:
+          - jiphy
+          - Arn
+    - Effect: 'Allow'
+      Action:
+        - 'dynamodb:Scan'
+      Resource:
+        Fn::GetAtt:
+          - jiphy
+          - Arn
   deploymentBucket:
     blockPublicAccess: true
 
