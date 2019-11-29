@@ -1,0 +1,35 @@
+service: jiphy
+
+provider:
+  name: aws
+  runtime: go1.x
+  region: eu-west-1
+  deploymentBucket:
+    blockPublicAccess: true
+
+functions:
+  jiphy:
+    handler: jiphy
+    environment:
+      BOT_NAME: ${env:BOT_NAME}
+      DYNAMO_TABLE_NAME: ${env:DYNAMO_TABLE_NAME}
+    events:
+      - http:
+          method: post
+          path: /
+
+resources:
+  Resources:
+    jiphy:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        TableName: ${env:DYNAMO_TABLE_NAME}
+        AttributeDefinitions:
+          - AttributeName: image_name
+            AttributeType: S
+        KeySchema:
+          - AttributeName: image_name
+            KeyType: HASH
+        ProvisionedThroughput:
+          ReadCapacityUnits: 1
+          WriteCapacityUnits: 1
