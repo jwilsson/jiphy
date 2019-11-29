@@ -44,7 +44,7 @@ func handleRequest(request events.APIGatewayProxyRequest) (events.APIGatewayProx
 			return createResponse(500), err
 		}
 
-		title := []string{"*All GIFs in Jiphy*"}
+		title := []string{fmt.Sprintf("*All GIFs in %s*", os.Getenv("BOT_NAME"))}
 		imageNames = append(title, imageNames...)
 		msg := buildSection(
 			strings.Join(imageNames, "\n"),
