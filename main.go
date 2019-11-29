@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"log"
 	"net/url"
 	"os"
@@ -56,18 +55,20 @@ func handleRequest(request events.APIGatewayProxyRequest) (events.APIGatewayProx
 	}
 
 	if image == nil {
-		imageURL := "https://media.giphy.com/media/l0Iy2hYDgmCjMufzq/giphy-downsized.gif"
-		title := fmt.Sprintf("Couldn't find \"%s\"", text)
+		image = &Image{
+			GiphyURL:  "https://giphy.com/gifs/stonehampress-funny-horse-l0Iy2hYDgmCjMufzq",
+			ImageName: "gif",
+			ImageURL:  "https://media.giphy.com/media/l0Iy2hYDgmCjMufzq/giphy-downsized.gif",
+		}
 
-		msg := createImage(title, imageURL, "ephemeral")
+		msg := createImage(image, body.Get("user_name"), "ephemeral")
 
 		sendMessage(slackURL, msg)
 
 		return createResponse(200), nil
 	}
 
-	title := fmt.Sprintf("%s sent \"%s\"", body.Get("user_name"), text)
-	msg := createImage(title, image.ImageURL, "in_channel")
+	msg := createImage(image, body.Get("user_name"), "in_channel")
 
 	sendMessage(slackURL, msg)
 

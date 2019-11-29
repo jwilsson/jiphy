@@ -3,16 +3,25 @@ package main
 import (
 	"bytes"
 	"encoding/json"
+	"fmt"
 	"log"
 	"net/http"
 
 	"github.com/nlopes/slack"
 )
 
-func createImage(title string, imageUrl string, responseType string) slack.Message {
-	blockTitle := slack.NewTextBlockObject("plain_text", title, false, false)
-	block := slack.NewImageBlock(imageUrl, title, "", blockTitle)
-	msg := slack.NewBlockMessage(block)
+func createImage(image *Image, userName string, responseType string) slack.Message {
+	msg := slack.NewBlockMessage()
+
+	text := fmt.Sprintf("<%s|*%s*>", image.GiphyURL, image.ImageName)
+	textBlock := slack.NewTextBlockObject("mrkdwn", text, false, false)
+	sectionBlock := slack.NewSectionBlock(textBlock, nil, nil)
+	msg = slack.AddBlockMessage(msg, sectionBlock)
+
+	text = fmt.Sprintf("Posted by %s using /jiphy", userName)
+	imageTitle := slack.NewTextBlockObject("plain_text", text, false, false)
+	imageBlock := slack.NewImageBlock(image.ImageURL, image.ImageName, "", imageTitle)
+	msg = slack.AddBlockMessage(msg, imageBlock)
 
 	msg.Msg.ResponseType = responseType
 

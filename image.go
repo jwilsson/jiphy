@@ -10,7 +10,7 @@ import (
 )
 
 type Image struct {
-	GiphyUrl  string `json:"giphy_url" dynamodbav:"giphy_url"`
+	GiphyURL  string `json:"giphy_url" dynamodbav:"giphy_url"`
 	ImageName string `json:"image_name" dynamodbav:"image_name"`
 	ImageURL  string `json:"image_url" dynamodbav:"image_url"`
 }
@@ -50,7 +50,6 @@ func getImage(input string, tableName string) (*Image, error) {
 	result, err := svc.Query(&dynamodb.QueryInput{
 		ExpressionAttributeValues: expressionAttributeValues,
 		KeyConditionExpression:    aws.String("image_name = :n"),
-		ProjectionExpression:      aws.String("image_url"),
 		TableName:                 aws.String(tableName),
 	})
 
