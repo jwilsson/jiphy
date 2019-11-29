@@ -11,16 +11,14 @@ import (
 
 type Image struct {
 	GiphyUrl  string `json:"giphy_url" dynamodbav:"giphy_url"`
-	Id        string `json:"id" dynamodbav:"id"`
 	ImageName string `json:"image_name" dynamodbav:"image_name"`
 	ImageURL  string `json:"image_url" dynamodbav:"image_url"`
 }
 
-func getImageNames(tableName string) ([]string, error) {
+func getImages(tableName string) ([]Image, error) {
 	svc := dynamodb.New(session.New())
 	result, err := svc.Scan(&dynamodb.ScanInput{
-		ProjectionExpression: aws.String("image_name"),
-		TableName:            aws.String(tableName),
+		TableName: aws.String(tableName),
 	})
 
 	if err != nil {
@@ -34,15 +32,11 @@ func getImageNames(tableName string) ([]string, error) {
 		return nil, err
 	}
 
-	imageNames := make([]string, 0, len(images))
+	sort.Slice(images, func(i int, j int) bool {
+		return images[i].ImageName < images[j].ImageName
+	})
 
-	for _, v := range images {
-		imageNames = append(imageNames, "• "+v.ImageName)
-	}
-
-	sort.Strings(imageNames)
-
-	return imageNames, nil
+	return images, nil
 }
 
 func getImage(input string, tableName string) (*Image, error) {

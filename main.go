@@ -5,7 +5,6 @@ import (
 	"log"
 	"net/url"
 	"os"
-	"strings"
 
 	"github.com/aws/aws-lambda-go/events"
 	"github.com/aws/aws-lambda-go/lambda"
@@ -39,16 +38,12 @@ func handleRequest(request events.APIGatewayProxyRequest) (events.APIGatewayProx
 	}
 
 	if text == "list" {
-		imageNames, err := getImageNames(os.Getenv("DYNAMO_TABLE_NAME"))
+		images, err := getImages(os.Getenv("DYNAMO_TABLE_NAME"))
 		if err != nil {
 			return createResponse(500), err
 		}
 
-		title := []string{fmt.Sprintf("*All GIFs in %s*", os.Getenv("BOT_NAME"))}
-		imageNames = append(title, imageNames...)
-		msg := buildSection(
-			strings.Join(imageNames, "\n"),
-		)
+		msg := createList(images)
 
 		sendMessage(slackURL, msg)
 
@@ -64,7 +59,7 @@ func handleRequest(request events.APIGatewayProxyRequest) (events.APIGatewayProx
 		imageURL := "https://media.giphy.com/media/l0Iy2hYDgmCjMufzq/giphy-downsized.gif"
 		title := fmt.Sprintf("Couldn't find \"%s\"", text)
 
-		msg := buildImage(title, imageURL, "ephemeral")
+		msg := createImage(title, imageURL, "ephemeral")
 
 		sendMessage(slackURL, msg)
 
@@ -72,7 +67,7 @@ func handleRequest(request events.APIGatewayProxyRequest) (events.APIGatewayProx
 	}
 
 	title := fmt.Sprintf("%s sent \"%s\"", body.Get("user_name"), text)
-	msg := buildImage(title, image.ImageURL, "in_channel")
+	msg := createImage(title, image.ImageURL, "in_channel")
 
 	sendMessage(slackURL, msg)
 

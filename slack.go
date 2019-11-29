@@ -9,7 +9,7 @@ import (
 	"github.com/nlopes/slack"
 )
 
-func buildImage(title string, imageUrl string, responseType string) slack.Message {
+func createImage(title string, imageUrl string, responseType string) slack.Message {
 	blockTitle := slack.NewTextBlockObject("plain_text", title, false, false)
 	block := slack.NewImageBlock(imageUrl, title, "", blockTitle)
 	msg := slack.NewBlockMessage(block)
@@ -19,10 +19,19 @@ func buildImage(title string, imageUrl string, responseType string) slack.Messag
 	return msg
 }
 
-func buildSection(content string) slack.Message {
-	blockText := slack.NewTextBlockObject("mrkdwn", content, false, false)
-	block := slack.NewSectionBlock(blockText, nil, nil)
-	msg := slack.NewBlockMessage(block)
+func createList(images []Image) slack.Message {
+	msg := slack.NewBlockMessage()
+
+	for _, image := range images {
+		text := fmt.Sprintf("<%s|*%s*>", image.GiphyURL, image.ImageName)
+
+		textBlock := slack.NewTextBlockObject("mrkdwn", text, false, false)
+		imageBlock := slack.NewImageBlockElement(image.ImageURL, image.ImageName)
+		accessory := slack.NewAccessory(imageBlock)
+
+		block := slack.NewSectionBlock(textBlock, nil, accessory)
+		msg = slack.AddBlockMessage(msg, block)
+	}
 
 	msg.Msg.ResponseType = "ephemeral"
 
