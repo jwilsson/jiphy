@@ -7,7 +7,7 @@ import (
 	"log"
 	"net/http"
 
-	"github.com/nlopes/slack"
+	"github.com/slack-go/slack"
 )
 
 func createImage(image *Image, userName string, responseType string) slack.Message {
