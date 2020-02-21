@@ -1,57 +1,39 @@
 package main
 
 import (
-	"log"
-	"net/url"
 	"os"
 
 	"github.com/aws/aws-lambda-go/events"
 	"github.com/aws/aws-lambda-go/lambda"
+	"github.com/jwilsson/go-bot-utils"
 )
 
-func createResponse(statusCode int) events.APIGatewayProxyResponse {
-	return events.APIGatewayProxyResponse{
-		Body:       "",
-		Headers:    map[string]string{},
-		StatusCode: statusCode,
-	}
-}
-
 func handleRequest(request events.APIGatewayProxyRequest) (events.APIGatewayProxyResponse, error) {
-	log.Printf("Received body: %v", request.Body)
-
-	body, err := url.ParseQuery(request.Body)
+	s, err := utils.ParseBody(request.Body)
 	if err != nil {
-		return createResponse(500), err
+		return utils.CreateResponse(500), err
 	}
 
-	slackURL, err := url.QueryUnescape(body.Get("response_url"))
-	if err != nil {
-		return createResponse(500), err
+	if s.Text == "" {
+		return utils.CreateResponse(200), nil
 	}
 
-	text := body.Get("text")
-
-	if text == "" {
-		return createResponse(200), nil
-	}
-
-	if text == "list" {
+	if s.Text == "list" {
 		images, err := getImages(os.Getenv("DYNAMO_TABLE_NAME"))
 		if err != nil {
-			return createResponse(500), err
+			return utils.CreateResponse(500), err
 		}
 
 		msg := createList(images)
 
-		sendMessage(slackURL, msg)
+		utils.SendMessage(s.ResponseURL, msg)
 
-		return createResponse(200), nil
+		return utils.CreateResponse(200), nil
 	}
 
-	image, err := getImage(text, os.Getenv("DYNAMO_TABLE_NAME"))
+	image, err := getImage(s.Text, os.Getenv("DYNAMO_TABLE_NAME"))
 	if err != nil {
-		return createResponse(500), err
+		return utils.CreateResponse(500), err
 	}
 
 	if image == nil {
@@ -61,18 +43,18 @@ func handleRequest(request events.APIGatewayProxyRequest) (events.APIGatewayProx
 			ImageURL:  "https://media.giphy.com/media/l0Iy2hYDgmCjMufzq/giphy-downsized.gif",
 		}
 
-		msg := createImage(image, body.Get("user_name"), "ephemeral")
+		msg := createImage(image, s.UserName, "ephemeral")
 
-		sendMessage(slackURL, msg)
+		utils.SendMessage(s.ResponseURL, msg)
 
-		return createResponse(200), nil
+		return utils.CreateResponse(200), nil
 	}
 
-	msg := createImage(image, body.Get("user_name"), "in_channel")
+	msg := createImage(image, s.UserName, "in_channel")
 
-	sendMessage(slackURL, msg)
+	utils.SendMessage(s.ResponseURL, msg)
 
-	return createResponse(200), nil
+	return utils.CreateResponse(200), nil
 }
 
 func main() {

@@ -1,11 +1,7 @@
 package main
 
 import (
-	"bytes"
-	"encoding/json"
 	"fmt"
-	"log"
-	"net/http"
 
 	"github.com/slack-go/slack"
 )
@@ -45,18 +41,4 @@ func createList(images []Image) slack.Message {
 	msg.Msg.ResponseType = "ephemeral"
 
 	return msg
-}
-
-func sendMessage(url string, message slack.Message) error {
-	body, _ := json.Marshal(message)
-
-	log.Printf("Posting %s to %s", body, url)
-
-	_, err := http.Post(
-		url,
-		"application/json",
-		bytes.NewBuffer(body),
-	)
-
-	return err
 }
