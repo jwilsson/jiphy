@@ -6,7 +6,7 @@ import (
 	"github.com/slack-go/slack"
 )
 
-func createImage(image *Image, userName string, responseType string) slack.Message {
+func createImage(image *Image, userName string, command string, responseType string) slack.Message {
 	msg := slack.NewBlockMessage()
 
 	text := fmt.Sprintf("<%s|*%s*>", image.GiphyURL, image.ImageName)
@@ -14,7 +14,7 @@ func createImage(image *Image, userName string, responseType string) slack.Messa
 	sectionBlock := slack.NewSectionBlock(textBlock, nil, nil)
 	msg = slack.AddBlockMessage(msg, sectionBlock)
 
-	text = fmt.Sprintf("Posted by %s using /jiphy", userName)
+	text = fmt.Sprintf("Posted by %s using %s", userName, command)
 	imageTitle := slack.NewTextBlockObject("plain_text", text, false, false)
 	imageBlock := slack.NewImageBlock(image.ImageURL, image.ImageName, "", imageTitle)
 	msg = slack.AddBlockMessage(msg, imageBlock)

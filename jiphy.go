@@ -31,26 +31,22 @@ func handleRequest(request events.APIGatewayProxyRequest) (events.APIGatewayProx
 		return utils.CreateResponse(200), nil
 	}
 
+	responseType := "in_channel"
 	image, err := getImage(s.Text, os.Getenv("DYNAMO_TABLE_NAME"))
 	if err != nil {
 		return utils.CreateResponse(500), err
 	}
 
 	if image == nil {
+		responseType = "ephemeral"
 		image = &Image{
 			GiphyURL:  "https://giphy.com/gifs/stonehampress-funny-horse-l0Iy2hYDgmCjMufzq",
 			ImageName: "gif",
 			ImageURL:  "https://media.giphy.com/media/l0Iy2hYDgmCjMufzq/giphy-downsized.gif",
 		}
-
-		msg := createImage(image, s.UserName, "ephemeral")
-
-		utils.SendMessage(s.ResponseURL, msg)
-
-		return utils.CreateResponse(200), nil
 	}
 
-	msg := createImage(image, s.UserName, "in_channel")
+	msg := createImage(image, s.UserName, s.Command, responseType)
 
 	utils.SendMessage(s.ResponseURL, msg)
 
