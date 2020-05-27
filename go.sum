@@ -16,6 +16,8 @@ github.com/jmespath/go-jmespath v0.0.0-20180206201540-c2b33e8439af h1:pmfjZENx5i
 github.com/jmespath/go-jmespath v0.0.0-20180206201540-c2b33e8439af/go.mod h1:Nht3zPeWKUH0NzdCt2Blrr5ys8VGpn0CEB0cQHVjt7k=
 github.com/jwilsson/go-bot-utils v1.0.2 h1:5XJpYIlB2T7Hr34awgcdeAITNvwGVNCh8SAMM/ztO4c=
 github.com/jwilsson/go-bot-utils v1.0.2/go.mod h1:SEPG+D7Ac++abSTWxMKXWbnrL9SBtteIBRYv3ng/O1o=
+github.com/jwilsson/go-bot-utils v1.1.0 h1:YwrH5ckuyX/qm0HZ3VXAYzgnJpeJHBNCtm5Ja0YSbKA=
+github.com/jwilsson/go-bot-utils v1.1.0/go.mod h1:SEPG+D7Ac++abSTWxMKXWbnrL9SBtteIBRYv3ng/O1o=
 github.com/pkg/errors v0.8.0/go.mod h1:bwawxfHBFNV+L2hUp1rHADufV3IMtnDRdf1r5NINEl0=
 github.com/pkg/errors v0.9.1 h1:FEBLx1zS214owpjy7qsBeixbURkuhQAwrK5UwLGTwt4=
 github.com/pkg/errors v0.9.1/go.mod h1:bwawxfHBFNV+L2hUp1rHADufV3IMtnDRdf1r5NINEl0=

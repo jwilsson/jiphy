@@ -27,6 +27,7 @@ functions:
     handler: jiphy
     environment:
       DYNAMO_TABLE_NAME: ${env:DYNAMO_TABLE_NAME}
+      SLACK_SIGNING_SECRET: ${env:SLACK_SIGNING_SECRET}
     events:
       - http:
           method: post

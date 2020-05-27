@@ -1,6 +1,7 @@
 package main
 
 import (
+	"errors"
 	"os"
 
 	"github.com/aws/aws-lambda-go/events"
@@ -9,6 +10,10 @@ import (
 )
 
 func handleRequest(request events.APIGatewayProxyRequest) (events.APIGatewayProxyResponse, error) {
+	if !utils.VerifySecret(request, os.Getenv("SLACK_SIGNING_SECRET")) {
+		return utils.CreateResponse(403), errors.New("Invalid signature header")
+	}
+
 	s, err := utils.ParseBody(request.Body)
 	if err != nil {
 		return utils.CreateResponse(500), err
