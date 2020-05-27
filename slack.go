@@ -9,15 +9,14 @@ import (
 func createImage(image *Image, userName string, command string, responseType string) slack.Message {
 	msg := slack.NewBlockMessage()
 
-	text := fmt.Sprintf("<%s|*%s*>", image.GiphyURL, image.ImageName)
-	textBlock := slack.NewTextBlockObject("mrkdwn", text, false, false)
-	sectionBlock := slack.NewSectionBlock(textBlock, nil, nil)
-	msg = slack.AddBlockMessage(msg, sectionBlock)
-
-	text = fmt.Sprintf("Posted by %s using %s", userName, command)
-	imageTitle := slack.NewTextBlockObject("plain_text", text, false, false)
+	imageTitle := slack.NewTextBlockObject("plain_text", image.ImageName, false, false)
 	imageBlock := slack.NewImageBlock(image.ImageURL, image.ImageName, "", imageTitle)
 	msg = slack.AddBlockMessage(msg, imageBlock)
+
+	text := fmt.Sprintf("Posted by %s using %s", userName, command)
+	textBlock := slack.NewTextBlockObject("plain_text", text, false, false)
+	contextBlock := slack.NewContextBlock("footer", textBlock)
+	msg = slack.AddBlockMessage(msg, contextBlock)
 
 	msg.Msg.ResponseType = responseType
 
