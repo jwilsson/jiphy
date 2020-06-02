@@ -18,6 +18,7 @@ func createImage(image *Image, userName string, command string, responseType str
 	contextBlock := slack.NewContextBlock("footer", textBlock)
 	msg = slack.AddBlockMessage(msg, contextBlock)
 
+	msg.Msg.Text = image.ImageName
 	msg.Msg.ResponseType = responseType
 
 	return msg
