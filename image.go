@@ -7,6 +7,8 @@ import (
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/dynamodb"
 	"github.com/aws/aws-sdk-go/service/dynamodb/dynamodbattribute"
+
+	utils "github.com/jwilsson/go-bot-utils"
 )
 
 type Image struct {
@@ -16,16 +18,12 @@ type Image struct {
 }
 
 func getImages(tableName string) (images []Image, err error) {
-	svc := dynamodb.New(session.New())
-	result, err := svc.Scan(&dynamodb.ScanInput{
-		TableName: aws.String(tableName),
-	})
-
+	s, err := session.NewSession()
 	if err != nil {
 		return nil, err
 	}
 
-	err = dynamodbattribute.UnmarshalListOfMaps(result.Items, &images)
+	err = utils.GetDynamodbData(s, tableName, &images)
 	if err != nil {
 		return nil, err
 	}
@@ -44,7 +42,12 @@ func getImage(input string, tableName string) (*Image, error) {
 		},
 	}
 
-	svc := dynamodb.New(session.New())
+	s, err := session.NewSession()
+	if err != nil {
+		return nil, err
+	}
+
+	svc := dynamodb.New(s)
 	result, err := svc.Query(&dynamodb.QueryInput{
 		ExpressionAttributeValues: expressionAttributeValues,
 		KeyConditionExpression:    aws.String("image_name = :n"),
