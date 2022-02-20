@@ -11,12 +11,12 @@ import (
 
 func handleRequest(request events.APIGatewayProxyRequest) (events.APIGatewayProxyResponse, error) {
 	if !utils.VerifySecret(request, os.Getenv("SLACK_SIGNING_SECRET")) {
-		return utils.CreateResponse(403), errors.New("Invalid signature header")
+		return utils.CreateResponse(403), errors.New("invalid signature header")
 	}
 
 	s, err := utils.ParseBody(request.Body)
 	if err != nil {
-		return utils.CreateResponse(500), err
+		return utils.CreateResponse(400), err
 	}
 
 	if s.Text == "" {
@@ -29,9 +29,7 @@ func handleRequest(request events.APIGatewayProxyRequest) (events.APIGatewayProx
 			return utils.CreateResponse(500), err
 		}
 
-		msg := createList(images)
-
-		utils.SendMessage(s.ResponseURL, msg)
+		utils.SendMessage(s.ResponseURL, createList(images))
 
 		return utils.CreateResponse(200), nil
 	}
@@ -51,9 +49,7 @@ func handleRequest(request events.APIGatewayProxyRequest) (events.APIGatewayProx
 		}
 	}
 
-	msg := createImage(image, s.UserName, s.Command, responseType)
-
-	utils.SendMessage(s.ResponseURL, msg)
+	utils.SendMessage(s.ResponseURL, createImage(image, s.UserName, s.Command, responseType))
 
 	return utils.CreateResponse(200), nil
 }
