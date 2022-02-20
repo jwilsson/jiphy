@@ -36,18 +36,18 @@ func getImages(tableName string) (images []Image, err error) {
 }
 
 func getImage(input string, tableName string) (*Image, error) {
-	expressionAttributeValues := map[string]*dynamodb.AttributeValue{
-		":n": {
-			S: aws.String(input),
-		},
-	}
-
 	s, err := session.NewSession()
 	if err != nil {
 		return nil, err
 	}
 
 	svc := dynamodb.New(s)
+	expressionAttributeValues := map[string]*dynamodb.AttributeValue{
+		":n": {
+			S: aws.String(input),
+		},
+	}
+
 	result, err := svc.Query(&dynamodb.QueryInput{
 		ExpressionAttributeValues: expressionAttributeValues,
 		KeyConditionExpression:    aws.String("image_name = :n"),
