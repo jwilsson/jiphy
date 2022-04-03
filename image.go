@@ -3,10 +3,7 @@ package main
 import (
 	"sort"
 
-	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/session"
-	"github.com/aws/aws-sdk-go/service/dynamodb"
-	"github.com/aws/aws-sdk-go/service/dynamodb/dynamodbattribute"
 
 	utils "github.com/jwilsson/go-bot-utils"
 )
@@ -15,6 +12,16 @@ type Image struct {
 	GiphyURL  string `json:"giphy_url" dynamodbav:"giphy_url"`
 	ImageName string `json:"image_name" dynamodbav:"image_name"`
 	ImageURL  string `json:"image_url" dynamodbav:"image_url"`
+}
+
+func findImage(images []Image, imageName string) *Image {
+	for _, image := range images {
+        if image.ImageName == imageName {
+            return &image
+        }
+    }
+
+    return nil
 }
 
 func getImages(tableName string) (images []Image, err error) {
@@ -33,41 +40,4 @@ func getImages(tableName string) (images []Image, err error) {
 	})
 
 	return images, nil
-}
-
-func getImage(input string, tableName string) (*Image, error) {
-	s, err := session.NewSession()
-	if err != nil {
-		return nil, err
-	}
-
-	svc := dynamodb.New(s)
-	expressionAttributeValues := map[string]*dynamodb.AttributeValue{
-		":n": {
-			S: aws.String(input),
-		},
-	}
-
-	result, err := svc.Query(&dynamodb.QueryInput{
-		ExpressionAttributeValues: expressionAttributeValues,
-		KeyConditionExpression:    aws.String("image_name = :n"),
-		TableName:                 aws.String(tableName),
-	})
-
-	if err != nil {
-		return nil, err
-	}
-
-	var images []Image
-
-	err = dynamodbattribute.UnmarshalListOfMaps(result.Items, &images)
-	if err != nil {
-		return nil, err
-	}
-
-	if len(images) == 0 {
-		return nil, nil
-	}
-
-	return &images[0], nil
 }

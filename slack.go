@@ -6,7 +6,7 @@ import (
 	"github.com/slack-go/slack"
 )
 
-func createImage(image *Image, userName string, command string, responseType string) slack.Message {
+func createImageMessage(image *Image, userName string, command string, responseType string) slack.Message {
 	msg := slack.NewBlockMessage()
 
 	imageTitle := slack.NewTextBlockObject("plain_text", image.ImageName, false, false)
@@ -24,7 +24,7 @@ func createImage(image *Image, userName string, command string, responseType str
 	return msg
 }
 
-func createList(images []Image) slack.Message {
+func createListMessage(images []Image) slack.Message {
 	msg := slack.NewBlockMessage()
 
 	for _, image := range images {
