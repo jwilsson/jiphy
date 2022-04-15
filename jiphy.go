@@ -14,7 +14,7 @@ func handleRequest(request events.LambdaFunctionURLRequest) (events.LambdaFuncti
 		return utils.CreateResponse(403), errors.New("invalid signature header")
 	}
 
-	s, err := utils.ParseBody(request.Body)
+	s, err := utils.ParseBody(request)
 	if err != nil {
 		return utils.CreateResponse(400), err
 	}
