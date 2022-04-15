@@ -9,7 +9,7 @@ import (
 	utils "github.com/jwilsson/go-bot-utils"
 )
 
-func handleRequest(request events.APIGatewayProxyRequest) (events.APIGatewayProxyResponse, error) {
+func handleRequest(request events.LambdaFunctionURLRequest) (events.LambdaFunctionURLResponse, error) {
 	if !utils.VerifySecret(request, os.Getenv("SLACK_SIGNING_SECRET")) {
 		return utils.CreateResponse(403), errors.New("invalid signature header")
 	}
