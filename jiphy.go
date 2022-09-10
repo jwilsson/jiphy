@@ -7,6 +7,7 @@ import (
 	"github.com/aws/aws-lambda-go/events"
 	"github.com/aws/aws-lambda-go/lambda"
 	utils "github.com/jwilsson/go-bot-utils"
+	"golang.org/x/exp/slices"
 )
 
 func handleRequest(request events.LambdaFunctionURLRequest) (events.LambdaFunctionURLResponse, error) {
@@ -19,10 +20,6 @@ func handleRequest(request events.LambdaFunctionURLRequest) (events.LambdaFuncti
 		return utils.CreateResponse(400), err
 	}
 
-	if s.Text == "" {
-		return utils.CreateResponse(200), nil
-	}
-
 	images, err := getImages(os.Getenv("DYNAMO_TABLE_NAME"))
 	if err != nil {
 		return utils.CreateResponse(500), err
@@ -31,10 +28,17 @@ func handleRequest(request events.LambdaFunctionURLRequest) (events.LambdaFuncti
 	if s.Text == "list" {
 		utils.SendMessage(s.ResponseURL, createListMessage(images))
 	} else {
-		responseType := "in_channel"
-		image := findImage(images, s.Text)
+		i := slices.IndexFunc(images, func(i Image) bool {
+			return i.ImageName == s.Text
+		})
 
-		if image == nil {
+		var responseType string
+		var image *Image
+
+		if i >= 0 {
+			responseType = "in_channel"
+			image = &images[i]
+		} else {
 			responseType = "ephemeral"
 			image = &Image{
 				GiphyURL:  "https://giphy.com/gifs/stonehampress-funny-horse-l0Iy2hYDgmCjMufzq",

@@ -14,16 +14,6 @@ type Image struct {
 	ImageURL  string `json:"image_url" dynamodbav:"image_url"`
 }
 
-func findImage(images []Image, imageName string) *Image {
-	for _, image := range images {
-        if image.ImageName == imageName {
-            return &image
-        }
-    }
-
-    return nil
-}
-
 func getImages(tableName string) (images []Image, err error) {
 	s, err := session.NewSession()
 	if err != nil {
