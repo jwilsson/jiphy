@@ -22,19 +22,19 @@ func createImageMessage(image *Image, userName string, command string, responseT
 }
 
 func createListMessage(images []Image) slack.Message {
-	msg := slack.NewBlockMessage()
+	blocks := make([]slack.Block, len(images))
 
-	for _, image := range images {
+	for i, image := range images {
 		text := fmt.Sprintf("<%s|*%s*>", image.GiphyURL, image.ImageName)
-
 		textBlock := slack.NewTextBlockObject("mrkdwn", text, false, false)
-		imageBlock := slack.NewImageBlockElement(image.ImageURL, image.ImageName)
-		accessory := slack.NewAccessory(imageBlock)
+		accessory := slack.NewAccessory(
+			slack.NewImageBlockElement(image.ImageURL, image.ImageName),
+		)
 
-		block := slack.NewSectionBlock(textBlock, nil, accessory)
-		msg = slack.AddBlockMessage(msg, block)
+		blocks[i] = slack.NewSectionBlock(textBlock, nil, accessory)
 	}
 
+	msg := slack.NewBlockMessage(blocks...)
 	msg.Msg.ResponseType = "ephemeral"
 
 	return msg
