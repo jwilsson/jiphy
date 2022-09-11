@@ -28,8 +28,8 @@ func handleRequest(request events.LambdaFunctionURLRequest) (events.LambdaFuncti
 	if s.Text == "list" {
 		utils.SendMessage(s.ResponseURL, createListMessage(images))
 	} else {
-		i := slices.IndexFunc(images, func(i Image) bool {
-			return i.ImageName == s.Text
+		i := slices.IndexFunc(images, func(img Image) bool {
+			return img.ImageName == s.Text
 		})
 
 		var responseType string
