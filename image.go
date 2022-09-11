@@ -17,12 +17,12 @@ type Image struct {
 func getImages(tableName string) (images []Image, err error) {
 	s, err := session.NewSession()
 	if err != nil {
-		return nil, err
+		return images, err
 	}
 
 	err = utils.GetDynamodbData(s, tableName, &images)
 	if err != nil {
-		return nil, err
+		return images, err
 	}
 
 	sort.Slice(images, func(i int, j int) bool {
