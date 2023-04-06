@@ -1,9 +1,10 @@
 package main
 
 import (
+	"context"
 	"sort"
 
-	"github.com/aws/aws-sdk-go/aws/session"
+	"github.com/aws/aws-sdk-go-v2/config"
 
 	utils "github.com/jwilsson/go-bot-utils"
 )
@@ -14,13 +15,13 @@ type Image struct {
 	ImageURL  string `json:"image_url" dynamodbav:"image_url"`
 }
 
-func getImages(tableName string) (images []Image, err error) {
-	s, err := session.NewSession()
+func getImages(ctx context.Context, tableName string) (images []Image, err error) {
+	cfg, err := config.LoadDefaultConfig(ctx)
 	if err != nil {
 		return images, err
 	}
 
-	err = utils.GetDynamodbData(s, tableName, &images)
+	err = utils.GetDynamodbData(ctx, cfg, tableName, &images)
 	if err != nil {
 		return images, err
 	}

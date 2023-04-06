@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"errors"
 	"os"
 
@@ -9,7 +10,7 @@ import (
 	utils "github.com/jwilsson/go-bot-utils"
 )
 
-func handleRequest(request events.LambdaFunctionURLRequest) (events.LambdaFunctionURLResponse, error) {
+func handleRequest(ctx context.Context, request events.LambdaFunctionURLRequest) (events.LambdaFunctionURLResponse, error) {
 	if !utils.VerifySecret(request, os.Getenv("SLACK_SIGNING_SECRET")) {
 		return utils.CreateResponse(403), errors.New("invalid signature header")
 	}
@@ -19,7 +20,7 @@ func handleRequest(request events.LambdaFunctionURLRequest) (events.LambdaFuncti
 		return utils.CreateResponse(400), err
 	}
 
-	images, err := getImages(os.Getenv("DYNAMO_TABLE_NAME"))
+	images, err := getImages(ctx, os.Getenv("DYNAMO_TABLE_NAME"))
 	if err != nil {
 		return utils.CreateResponse(500), err
 	}
