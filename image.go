@@ -15,15 +15,15 @@ type Image struct {
 	ImageURL  string `json:"image_url" dynamodbav:"image_url"`
 }
 
-func getImages(ctx context.Context, tableName string) (images []Image, err error) {
+func getImages(ctx context.Context, tableName string) ([]Image, error) {
 	cfg, err := config.LoadDefaultConfig(ctx)
 	if err != nil {
-		return images, err
+		return nil, err
 	}
 
-	err = utils.GetDynamodbData(ctx, cfg, tableName, &images)
+	images, err := utils.GetDynamodbData[Image](ctx, cfg, tableName)
 	if err != nil {
-		return images, err
+		return nil, err
 	}
 
 	sort.Slice(images, func(i int, j int) bool {

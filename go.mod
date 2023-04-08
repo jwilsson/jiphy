@@ -5,7 +5,7 @@ go 1.19
 require (
 	github.com/aws/aws-lambda-go v1.34.1
 	github.com/aws/aws-sdk-go-v2/config v1.18.19
-	github.com/jwilsson/go-bot-utils v1.13.1
+	github.com/jwilsson/go-bot-utils v1.14.1
 	github.com/slack-go/slack v0.11.3
 	golang.org/x/exp v0.0.0-20220909182711-5c715a9e8561
 )
