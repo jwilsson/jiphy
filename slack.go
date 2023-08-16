@@ -2,10 +2,10 @@ package main
 
 import (
 	"fmt"
+	"slices"
 
 	utils "github.com/jwilsson/go-bot-utils"
 	"github.com/slack-go/slack"
-	"golang.org/x/exp/slices"
 )
 
 type MessageInput struct {
