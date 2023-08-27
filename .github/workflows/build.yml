@@ -24,6 +24,7 @@ jobs:
     - uses: actions/setup-go@v3
       with:
         go-version-file: 'go.mod'
-    - run: go build
+    - run: make build
 
+    - run: make zip
     - run: sls deploy
