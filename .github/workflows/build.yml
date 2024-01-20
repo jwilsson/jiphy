@@ -3,7 +3,6 @@ name: build
 on: [push]
 
 env:
-  GOOS: linux
   AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
   AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
   DYNAMO_TABLE_NAME: ${{ secrets.DYNAMO_TABLE_NAME }}
@@ -14,14 +13,14 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v4
 
-    - uses: actions/setup-node@v3
+    - uses: actions/setup-node@v4
       with:
-        node-version: '18'
+        node-version: '20'
     - run: npm install -g serverless
 
-    - uses: actions/setup-go@v3
+    - uses: actions/setup-go@v5
       with:
         go-version-file: 'go.mod'
     - run: make build
