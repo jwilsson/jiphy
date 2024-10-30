@@ -1,5 +1,2 @@
 build:
-	env GOOS=linux GOARCH=arm64 go build -tags lambda.norpc -o bootstrap
-
-zip:
-	zip -j bootstrap.zip bootstrap
+	env GOOS=linux GOARCH=arm64 go build -C app -tags lambda.norpc -o build/bootstrap
