@@ -7,11 +7,11 @@ A handy Slack bot to send your favorite GIFs.
 
 ## Setup
 1. Start by creating a [Slack app and setting up a Slash Command](https://api.slack.com/interactivity/slash-commands).
-2. Configure your [AWS account to work with Serverless](https://serverless.com/framework/docs/providers/aws/guide/credentials/).
-3. Configure a `DYNAMO_TABLE_NAME` environmental variable with the name of your DynamoDB table.
-4. Configure a `SLACK_SIGNING_SECRET` environmental variable with your Slack app's signing secret.
+2. Configure a `DYNAMO_TABLE_NAME` environmental variable with the name of your DynamoDB table.
+3. Configure a `SLACK_SIGNING_SECRET` environmental variable with your Slack app's signing secret.
+4. Deploy using `cdk deploy`.
 5. After deploying the first time, add some images to your DynamoDB table, see the item structure below.
-6. Change any other values in `serverless.yml` to fit your needs.
+6. Change any other values in `cdk.go` to fit your needs.
 7. Profit!
 
 ### Example image item

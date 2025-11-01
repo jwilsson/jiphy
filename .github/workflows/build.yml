@@ -3,8 +3,6 @@ name: build
 on: [push]
 
 env:
-  AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-  AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
   DYNAMO_TABLE_NAME: ${{ secrets.DYNAMO_TABLE_NAME }}
   SLACK_SIGNING_SECRET: ${{ secrets.SLACK_SIGNING_SECRET }}
 
@@ -13,17 +11,31 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v4
+      - name: Checkout code
+        uses: actions/checkout@v4
 
-    - uses: actions/setup-node@v4
-      with:
-        node-version: '20'
-    - run: npm install -g serverless
+      - name: Setup Go env
+        uses: actions/setup-go@v5
+        with:
+          go-version-file: 'go.mod'
 
-    - uses: actions/setup-go@v5
-      with:
-        go-version-file: 'go.mod'
-    - run: make build
+      - name: Build
+        run: make build
 
-    - run: make zip
-    - run: sls deploy
+      - name: Setup Node env
+        uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+
+      - name: Install AWS CDK
+        run: npm install -g aws-cdk
+
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@master
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ secrets.AWS_DEFAULT_REGION }}
+
+      - name: Deploy
+        run: cdk deploy
