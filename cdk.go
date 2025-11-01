@@ -22,14 +22,22 @@ func NewJiphyStack(scope constructs.Construct, id string, props *StackProps) aws
 
 	stack := awscdk.NewStack(scope, &id, &sprops)
 
-	// Setup Lambda function
+	table := awsdynamodb.NewTable(stack, jsii.String(os.Getenv("DYNAMO_TABLE_NAME")), &awsdynamodb.TableProps{
+		PartitionKey: &awsdynamodb.Attribute{
+			Name: jsii.String("image_name"),
+			Type: awsdynamodb.AttributeType_STRING,
+		},
+		ReadCapacity: jsii.Number(1),
+		WriteCapacity: jsii.Number(1),
+	})
+
 	function := awslambda.NewFunction(stack, jsii.String("JiphyFunction"), &awslambda.FunctionProps{
 		Architecture: awslambda.Architecture_ARM_64(),
 		Runtime:      awslambda.Runtime_PROVIDED_AL2(),
 		Handler:      jsii.String("bootstrap"),
 		Code:         awslambda.Code_FromAsset(jsii.String("./app/build/"), nil),
 		Environment: &map[string]*string{
-			"DYNAMO_TABLE_NAME":    jsii.String(os.Getenv("DYNAMO_TABLE_NAME")),
+			"DYNAMO_TABLE_NAME":    jsii.String(*table.TableName()),
 			"SLACK_SIGNING_SECRET": jsii.String(os.Getenv("SLACK_SIGNING_SECRET")),
 		},
 	})
@@ -42,13 +50,7 @@ func NewJiphyStack(scope constructs.Construct, id string, props *StackProps) aws
 		Value: functionUrl.Url(),
 	})
 
-	// Setup DynamoDB Table
-	awsdynamodb.NewTable(stack, jsii.String(os.Getenv("DYNAMO_TABLE_NAME")), &awsdynamodb.TableProps{
-		PartitionKey: &awsdynamodb.Attribute{
-			Name: jsii.String("image_name"),
-			Type: awsdynamodb.AttributeType_STRING,
-		},
-	})
+	table.Grant(function, jsii.String("dynamodb:Query"), jsii.String("dynamodb:Scan"))
 
 	return stack
 }
