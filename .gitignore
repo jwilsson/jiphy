@@ -1,4 +1,4 @@
 .DS_Store
-.serverless
-bootstrap
-bootstrap.zip
+build
+.cdk.staging
+cdk.out
