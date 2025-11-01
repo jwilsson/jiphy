@@ -5,7 +5,6 @@ import (
 
 	"github.com/aws/aws-cdk-go/awscdk/v2"
 	"github.com/aws/aws-cdk-go/awscdk/v2/awsdynamodb"
-	"github.com/aws/aws-cdk-go/awscdk/v2/awsiam"
 	"github.com/aws/aws-cdk-go/awscdk/v2/awslambda"
 	"github.com/aws/constructs-go/constructs/v10"
 	"github.com/aws/jsii-runtime-go"
@@ -37,11 +36,6 @@ func NewJiphyStack(scope constructs.Construct, id string, props *StackProps) aws
 
 	functionUrl := function.AddFunctionUrl(&awslambda.FunctionUrlOptions{
 		AuthType: awslambda.FunctionUrlAuthType_NONE,
-	})
-
-	function.AddPermission(jsii.String("JiphyInvokeFunctionPermission"), &awslambda.Permission{
-		Action:    jsii.String("lambda:InvokeFunction"),
-		Principal: awsiam.NewServicePrincipal(jsii.String("lambda.amazonaws.com"), nil),
 	})
 
 	awscdk.NewCfnOutput(stack, jsii.String("jiphyFunctionUrlOutput"), &awscdk.CfnOutputProps{
