@@ -33,7 +33,7 @@ func NewJiphyStack(scope constructs.Construct, id string, props *StackProps) aws
 
 	function := awslambda.NewFunction(stack, jsii.String("JiphyFunction"), &awslambda.FunctionProps{
 		Architecture: awslambda.Architecture_ARM_64(),
-		Runtime:      awslambda.Runtime_PROVIDED_AL2(),
+		Runtime:      awslambda.Runtime_PROVIDED_AL2023(),
 		Handler:      jsii.String("bootstrap"),
 		Code:         awslambda.Code_FromAsset(jsii.String("./app/build/"), nil),
 		Environment: &map[string]*string{
