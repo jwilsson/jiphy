@@ -1,12 +1,12 @@
 module github.com/jwilsson/jiphy
 
-go 1.21
+go 1.26
 
 require (
 	github.com/aws/aws-lambda-go v1.34.1
 	github.com/aws/aws-sdk-go-v2/config v1.18.19
-	github.com/jwilsson/go-bot-utils v1.14.1
-	github.com/slack-go/slack v0.11.3
+	github.com/jwilsson/go-bot-utils v1.14.2
+	github.com/slack-go/slack v0.23.1
 )
 
 require (
@@ -26,7 +26,7 @@ require (
 	github.com/aws/aws-sdk-go-v2/service/ssooidc v1.14.6 // indirect
 	github.com/aws/aws-sdk-go-v2/service/sts v1.18.7 // indirect
 	github.com/aws/smithy-go v1.13.5 // indirect
-	github.com/gorilla/websocket v1.5.0 // indirect
+	github.com/gorilla/websocket v1.5.3 // indirect
 	github.com/jmespath/go-jmespath v0.4.0 // indirect
 	github.com/rickar/cal/v2 v2.1.7 // indirect
 )
